@@ -58,5 +58,28 @@ private:
 
 struct handle_test : public ::testing::Test
 {
+    handle subscribe()
+    {
+        int allocated_id = _next_id++;
+        _subscriptions.push_back(allocated_id);
 
+        return handle([&]()
+        {
+            _subscriptions.erase(std::remove(std::begin(_subscriptions), std::end(_subscriptions), allocated_id));
+        });
+    }
+
+protected:
+    std::vector<int> _subscriptions;
+    int _next_id = 0;
+};
+
+TEST_F(handle_test, basic)
+{
+    {
+        auto h = subscribe();
+        EXPECT_EQ(1, int(_subscriptions.size()));
+    }
+
+    EXPECT_EQ(0, int(_subscriptions.size()));
 }
