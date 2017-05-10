@@ -32,3 +32,19 @@ TEST_F(handler_test, basic)
 
     EXPECT_EQ(0, int(_subscriptions.size()));
 }
+
+TEST_F(handler_test, move)
+{
+    {
+        handler moved;
+
+        {
+            auto h = subscribe();
+            moved = std::move(h);
+        }
+
+        EXPECT_EQ(1, int(_subscriptions.size()));
+    }
+
+    EXPECT_EQ(0, int(_subscriptions.size()));
+}

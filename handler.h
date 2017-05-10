@@ -22,6 +22,9 @@ struct handler
     handler(const handler&) =delete;
     handler& operator=(const handler&) =delete;
 
+    handler(handler&&) =default;
+    handler& operator=(handler&&) =default;
+
 private:
     std::function<void()> _deleter;
 };
