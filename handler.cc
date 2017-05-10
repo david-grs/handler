@@ -48,3 +48,13 @@ TEST_F(handler_test, move)
 
     EXPECT_EQ(0, int(_subscriptions.size()));
 }
+
+TEST_F(handler_test, dtor)
+{
+    {
+        auto h = subscribe();
+        h.~handler();
+    }
+
+    EXPECT_EQ(0, int(_subscriptions.size()));
+}
