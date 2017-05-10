@@ -2,6 +2,10 @@
 
 #include <gtest/gtest.h>
 
+#include <vector>
+#include <algorithm>
+#include <functional>
+
 struct A
 {
     A() { default_constructions++; }
@@ -28,7 +32,31 @@ int A::copy_constructions = 0;
 int A::move_constructions = 0;
 int A::destructions = 0;
 
-TEST(subscription, basic)
+struct handle
+{
+    template <typename F>
+    explicit handle(F f)
+        : _deleter(std::forward<F>(f))
+    {}
+    handle() =default;
+
+    ~handle() noexcept
+    {
+        if (_deleter)
+        {
+            _deleter();
+            _deleter = nullptr;}
+        }
+    }
+
+    handle(const handle&) =delete;
+    handle& operator=(const handle&) =delete;
+
+private:
+    std::function<void()> _deleter;
+};
+
+struct handle_test : public ::testing::Test
 {
 
 }
