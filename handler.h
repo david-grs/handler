@@ -2,7 +2,7 @@
 
 #include <functional>
 
-struct handler
+struct [[nodiscard]] handler
 {
     template <typename F>
     explicit handler(F f)
