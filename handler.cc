@@ -74,3 +74,30 @@ TEST_F(handler_test, multiple)
     EXPECT_EQ(1, int(_subscriptions.size()));
     EXPECT_EQ(1, _subscriptions.back());
 }
+
+
+
+struct subscription_list_test : public ::testing::Test
+{
+    using Callback = std::function<void(int)>;
+
+    handler subscribe(Callback callback)
+    {
+        return _subscriptions.add(callback);
+    }
+
+protected:
+    subscription_list<Callback> _subscriptions;
+};
+
+TEST_F(subscription_list_test, basic)
+{
+    int sum = 0;
+
+    {
+        auto h = subscribe([&](int i) { sum += i; } );
+        EXPECT_EQ(1, int(_subscriptions.size()));
+    }
+
+    EXPECT_EQ(0, int(_subscriptions.size()));
+}
