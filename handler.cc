@@ -100,4 +100,33 @@ TEST_F(subscription_list_test, basic)
     }
 
     EXPECT_EQ(0, int(_subscriptions.size()));
+    EXPECT_EQ(0, sum);
+}
+
+TEST_F(subscription_list_test, call)
+{
+    int sum = 0;
+
+    auto h = subscribe([&](int i) { sum += i; } );
+    _subscriptions.call(1);
+    _subscriptions.call(3);
+    _subscriptions.call(5);
+
+    EXPECT_EQ(9, sum);
+}
+
+
+TEST_F(subscription_list_test, call_after_destruction)
+{
+    int sum = 0;
+
+    {
+        auto h = subscribe([&](int i) { sum += i; } );
+        _subscriptions.call(1);
+    }
+
+    _subscriptions.call(3);
+    _subscriptions.call(5);
+
+    EXPECT_EQ(1, sum);
 }
