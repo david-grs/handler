@@ -50,6 +50,13 @@ struct subscription_list
         });
     }
 
+    template <typename... Args>
+    void call(Args&&... args)
+    {
+        for (auto&& f : _subscriptions)
+            f.second(std::forward<Args>(args)...);
+    }
+
     auto size() const { return _subscriptions.size(); }
 
 private:
