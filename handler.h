@@ -28,3 +28,33 @@ struct handler
 private:
     std::function<void()> _deleter;
 };
+
+
+
+#include <vector>
+#include <utility>
+#include <algorithm>
+
+template <typename Callback>
+struct subscription_list
+{
+    handler add(Callback callback)
+    {
+        SubscriptionId allocated_id = _next_id++;
+        _subscriptions.emplace_back(allocated_id, std::move(callback));
+
+        return handler([this, allocated_id]()
+        {
+            _subscriptions.erase(std::remove_if(std::begin(_subscriptions), std::end(_subscriptions),
+                                                [&](const auto& p) { return p.first == allocated_id; }));
+        });
+    }
+
+    auto size() const { return _subscriptions.size(); }
+
+private:
+    using SubscriptionId = std::size_t;
+
+    SubscriptionId _next_id = {};
+    std::vector<std::pair<SubscriptionId, Callback>> _subscriptions;
+};
