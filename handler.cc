@@ -130,3 +130,15 @@ TEST_F(subscription_list_test, call_after_destruction)
 
     EXPECT_EQ(1, sum);
 }
+
+TEST_F(subscription_list_test, discard_return)
+{
+    int sum = 0;
+
+    subscribe([&](int i) { sum += i; } );
+    _subscriptions.call(1);
+    _subscriptions.call(3);
+    _subscriptions.call(5);
+
+    EXPECT_EQ(0, sum);
+}
