@@ -6,11 +6,10 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     add_definitions("-Weverything -Wno-c++98-compat")
 endif()
 
-find_package(GTest REQUIRED)
-include_directories(${GTEST_INCLUDE_DIRS})
+include(gtest.cmake)
 
 add_executable(handler handler.cc)
-target_link_libraries(handler ${GTEST_BOTH_LIBRARIES} pthread)
+target_link_libraries(handler gtest pthread)
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     target_link_libraries(handler stdc++)
