@@ -19,6 +19,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 include(gtest.cmake)
 
-add_executable(handler handler.cc)
-target_link_libraries(handler gtest pthread)
+find_package(Threads)
+add_executable(tests unit_tests.cc)
+target_link_libraries(tests gtest ${CMAKE_THREAD_LIBS_INIT})
 
