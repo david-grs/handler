@@ -21,7 +21,7 @@ protected:
 	int _subscriptions = 0;
 };
 
-TEST_F(handler_test, basic)
+TEST_F(handler_test, subscribe)
 {
 	{
 		auto h = subscribe();
@@ -47,7 +47,7 @@ TEST_F(handler_test, move)
 	EXPECT_EQ(0, _subscriptions);
 }
 
-TEST_F(handler_test, dtor)
+TEST_F(handler_test, lifetime)
 {
 	{
 		auto h = subscribe();
@@ -84,16 +84,16 @@ protected:
 	subscription_list<Callback> _subscriptions;
 };
 
-TEST_F(subscription_list_test, basic)
+TEST_F(subscription_list_test, subscribe)
 {
 	int sum = 0;
 
 	{
 		auto h = subscribe([&](int i) { sum += i; } );
-		EXPECT_EQ(1, int(_subscriptions.size()));
+		EXPECT_EQ(1u, _subscriptions.size());
 	}
 
-	EXPECT_EQ(0, int(_subscriptions.size()));
+	EXPECT_EQ(0u, _subscriptions.size());
 	EXPECT_EQ(0, sum);
 }
 
@@ -110,7 +110,7 @@ TEST_F(subscription_list_test, call)
 }
 
 
-TEST_F(subscription_list_test, call_after_destruction)
+TEST_F(subscription_list_test, late_call)
 {
 	int sum = 0;
 
@@ -129,7 +129,7 @@ TEST_F(subscription_list_test, discard_return)
 {
 	int sum = 0;
 
-	subscribe([&](int i) { sum += i; } );
+	(void)subscribe([&](int i) { sum += i; } );
 	_subscriptions.call(1);
 	_subscriptions.call(3);
 	_subscriptions.call(5);
