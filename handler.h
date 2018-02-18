@@ -17,7 +17,7 @@ public:
 		if (_deleter)
 		{
 			_deleter();
-			_deleter = nullptr;
+			_deleter = {};
 		}
 	}
 

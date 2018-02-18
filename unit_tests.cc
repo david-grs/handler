@@ -3,36 +3,32 @@
 #include <gtest/gtest.h>
 
 #include <vector>
-#include <algorithm>
 #include <iostream>
 
 struct handler_test : public ::testing::Test
 {
 	handler subscribe()
 	{
-		int allocated_id = _next_id++;
-		_subscriptions.push_back(allocated_id);
+		++_subscriptions;
 
-		return handler([this, allocated_id]()
+		return handler([=]()
 		{
-			std::cout << "removing id " << allocated_id << std::endl;
-			_subscriptions.erase(std::remove(std::begin(_subscriptions), std::end(_subscriptions), allocated_id));
+			--_subscriptions;
 		});
 	}
 
 protected:
-	std::vector<int> _subscriptions;
-	int _next_id = 0;
+	int _subscriptions = 0;
 };
 
 TEST_F(handler_test, basic)
 {
 	{
 		auto h = subscribe();
-		EXPECT_EQ(1, int(_subscriptions.size()));
+		EXPECT_EQ(1, _subscriptions);
 	}
 
-	EXPECT_EQ(0, int(_subscriptions.size()));
+	EXPECT_EQ(0, _subscriptions);
 }
 
 TEST_F(handler_test, move)
@@ -45,10 +41,10 @@ TEST_F(handler_test, move)
 			moved = std::move(h);
 		}
 
-		EXPECT_EQ(1, int(_subscriptions.size()));
+		EXPECT_EQ(1, _subscriptions);
 	}
 
-	EXPECT_EQ(0, int(_subscriptions.size()));
+	EXPECT_EQ(0, _subscriptions);
 }
 
 TEST_F(handler_test, dtor)
@@ -57,7 +53,7 @@ TEST_F(handler_test, dtor)
 		auto h = subscribe();
 	}
 
-	EXPECT_EQ(0, int(_subscriptions.size()));
+	EXPECT_EQ(0, _subscriptions);
 }
 
 TEST_F(handler_test, multiple)
@@ -67,11 +63,10 @@ TEST_F(handler_test, multiple)
 	{
 		auto h1 = subscribe();
 		h2 = subscribe();
-		EXPECT_EQ(2, int(_subscriptions.size()));
+		EXPECT_EQ(2, _subscriptions);
 	}
 
-	EXPECT_EQ(1, int(_subscriptions.size()));
-	EXPECT_EQ(1, _subscriptions.back());
+	EXPECT_EQ(1, _subscriptions);
 }
 
 
